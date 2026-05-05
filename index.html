@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FT TRACKER — 上智バスケ部</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F2ED;
+  --surface: #FFFFFF;
+  --surface2: #EDEAE4;
+  --orange: #E8420A;
+  --orange-light: #FFF0EB;
+  --dark: #1A1A1A;
+  --mid: #666;
+  --line: #E0DDD8;
+  --green: #1A7A4A;
+  --green-bg: #E8F5EE;
+  --red: #C0392B;
+  --red-bg: #FDECEB;
+}
+
+- { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+background: var(–bg);
+color: var(–dark);
+font-family: ‘Noto Sans JP’, sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+background: var(–dark);
+padding: 14px 18px 12px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: sticky;
+top: 0;
+z-index: 50;
+}
+
+.logo {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 22px;
+letter-spacing: 3px;
+color: var(–orange);
+}
+.logo sub {
+font-family: ‘JetBrains Mono’, monospace;
+font-size: 9px;
+color: #888;
+display: block;
+letter-spacing: 2px;
+margin-top: -3px;
+}
+
+.date-badge {
+font-family: ‘JetBrains Mono’, monospace;
+font-size: 11px;
+color: #888;
+background: #2a2a2a;
+padding: 4px 10px;
+border-radius: 12px;
+}
+
+/* TABS */
+.tabs {
+display: flex;
+background: var(–surface);
+border-bottom: 2px solid var(–line);
+position: sticky;
+top: 52px;
+z-index: 40;
+}
+
+.tab {
+flex: 1;
+padding: 12px 8px;
+text-align: center;
+font-size: 12px;
+font-weight: 700;
+color: var(–mid);
+cursor: pointer;
+border-bottom: 3px solid transparent;
+margin-bottom: -2px;
+transition: all 0.2s;
+letter-spacing: 0.5px;
+}
+.tab.active {
+color: var(–orange);
+border-bottom-color: var(–orange);
+}
+
+/* PAGES */
+.page { display: none; padding: 16px; }
+.page.active { display: block; }
+
+/* SESSION BAR */
+.session-bar {
+background: var(–surface);
+border-radius: 12px;
+padding: 12px 16px;
+display: flex;
+align-items: center;
+gap: 10px;
+margin-bottom: 16px;
+border: 1px solid var(–line);
+}
+
+.session-bar input {
+flex: 1;
+border: none;
+font-size: 14px;
+font-family: ‘Noto Sans JP’, sans-serif;
+color: var(–dark);
+background: transparent;
+outline: none;
+}
+.session-bar input::placeholder { color: #bbb; }
+
+.session-label {
+font-size: 11px;
+font-family: ‘JetBrains Mono’, monospace;
+color: var(–mid);
+white-space: nowrap;
+}
+
+/* PLAYER LIST */
+.player-grid {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.player-card {
+background: var(–surface);
+border-radius: 14px;
+border: 1.5px solid var(–line);
+overflow: hidden;
+transition: border-color 0.2s, box-shadow 0.2s;
+}
+.player-card.recording {
+border-color: var(–orange);
+box-shadow: 0 0 0 3px var(–orange-light);
+}
+
+.player-card-header {
+display: flex;
+align-items: center;
+padding: 12px 14px;
+gap: 12px;
+cursor: pointer;
+}
+
+.player-number {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 28px;
+color: var(–orange);
+min-width: 36px;
+line-height: 1;
+}
+
+.player-info { flex: 1; }
+.player-name { font-size: 15px; font-weight: 700; }
+.player-stats-inline {
+font-size: 12px;
+color: var(–mid);
+font-family: ‘JetBrains Mono’, monospace;
+margin-top: 1px;
+}
+
+.rate-pill {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 20px;
+padding: 4px 10px;
+border-radius: 8px;
+min-width: 56px;
+text-align: center;
+}
+.rate-high { background: var(–green-bg); color: var(–green); }
+.rate-mid { background: #FFF8E1; color: #B8860B; }
+.rate-low { background: var(–red-bg); color: var(–red); }
+.rate-none { background: var(–surface2); color: var(–mid); }
+
+/* RECORDING PANEL */
+.recording-panel {
+display: none;
+padding: 0 14px 14px;
+border-top: 1px solid var(–line);
+animation: fadeDown 0.2s ease;
+}
+.recording-panel.open { display: block; }
+
+@keyframes fadeDown {
+from { opacity: 0; transform: translateY(-6px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.round-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 10px 0 8px;
+}
+
+.round-label {
+font-size: 11px;
+font-family: ‘JetBrains Mono’, monospace;
+color: var(–mid);
+letter-spacing: 1px;
+text-transform: uppercase;
+}
+
+.shot-buttons {
+display: flex;
+gap: 8px;
+}
+
+.btn-shot {
+flex: 1;
+padding: 14px 0;
+border-radius: 10px;
+border: none;
+font-size: 22px;
+cursor: pointer;
+transition: transform 0.1s, opacity 0.1s;
+font-weight: 900;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 2px;
+}
+.btn-shot:active { transform: scale(0.93); }
+
+.btn-in {
+background: var(–green-bg);
+color: var(–green);
+border: 2px solid #A8D8BA;
+}
+.btn-in span { font-size: 11px; font-weight: 700; font-family: ‘Noto Sans JP’, sans-serif; }
+
+.btn-out {
+background: var(–red-bg);
+color: var(–red);
+border: 2px solid #F0B8B4;
+}
+.btn-out span { font-size: 11px; font-weight: 700; font-family: ‘Noto Sans JP’, sans-serif; }
+
+/* Shot history dots */
+.shot-history {
+display: flex;
+flex-wrap: wrap;
+gap: 5px;
+padding: 8px 0 4px;
+min-height: 28px;
+}
+
+.shot-dot {
+width: 20px;
+height: 20px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 10px;
+cursor: pointer;
+transition: transform 0.1s;
+position: relative;
+}
+.shot-dot:active { transform: scale(0.9); }
+.shot-dot.in { background: var(–green-bg); color: var(–green); border: 1.5px solid #A8D8BA; }
+.shot-dot.out { background: var(–red-bg); color: var(–red); border: 1.5px solid #F0B8B4; }
+
+.undo-btn {
+font-size: 11px;
+color: var(–mid);
+background: var(–surface2);
+border: 1px solid var(–line);
+border-radius: 6px;
+padding: 4px 10px;
+cursor: pointer;
+font-family: ‘JetBrains Mono’, monospace;
+transition: all 0.15s;
+margin-top: 4px;
+}
+.undo-btn:hover { color: var(–red); border-color: var(–red); }
+
+/* EDIT / DELETE BUTTONS */
+.card-actions {
+display: flex;
+gap: 6px;
+align-items: center;
+}
+.btn-edit, .btn-delete {
+border: none;
+border-radius: 6px;
+padding: 6px 10px;
+font-size: 13px;
+cursor: pointer;
+transition: all 0.15s;
+line-height: 1;
+}
+.btn-edit { background: var(–surface2); color: var(–mid); }
+.btn-edit:hover { background: #e0f0ff; color: #2271b3; }
+.btn-delete { background: var(–surface2); color: var(–mid); }
+.btn-delete:hover { background: var(–red-bg); color: var(–red); }
+
+/* EDIT MODAL */
+.edit-overlay {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.5);
+z-index: 200;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 20px;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.2s;
+}
+.edit-overlay.open { opacity: 1; pointer-events: all; }
+
+.edit-modal {
+background: var(–surface);
+border-radius: 16px;
+padding: 22px 20px;
+width: 100%;
+max-width: 320px;
+border-top: 3px solid var(–orange);
+transform: scale(0.95);
+transition: transform 0.2s;
+}
+.edit-overlay.open .edit-modal { transform: scale(1); }
+
+.edit-modal h3 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 20px;
+letter-spacing: 2px;
+color: var(–orange);
+margin-bottom: 14px;
+}
+.edit-modal label {
+font-size: 11px;
+font-family: ‘JetBrains Mono’, monospace;
+color: var(–mid);
+display: block;
+margin-bottom: 4px;
+letter-spacing: 1px;
+}
+.edit-modal input {
+width: 100%;
+border: 1px solid var(–line);
+border-radius: 8px;
+padding: 10px 12px;
+font-size: 15px;
+font-family: ‘Noto Sans JP’, sans-serif;
+color: var(–dark);
+background: var(–bg);
+outline: none;
+margin-bottom: 12px;
+transition: border-color 0.2s;
+}
+.edit-modal input:focus { border-color: var(–orange); }
+.edit-modal-btns { display: flex; gap: 8px; margin-top: 4px; }
+.btn-save {
+flex: 1;
+background: var(–orange);
+color: white;
+border: none;
+border-radius: 8px;
+padding: 11px;
+font-size: 14px;
+font-weight: 700;
+cursor: pointer;
+font-family: ‘Noto Sans JP’, sans-serif;
+}
+.btn-cancel {
+background: var(–surface2);
+color: var(–mid);
+border: none;
+border-radius: 8px;
+padding: 11px 16px;
+font-size: 14px;
+cursor: pointer;
+font-family: ‘Noto Sans JP’, sans-serif;
+}
+
+/* CONFIRM DELETE MODAL */
+.confirm-overlay {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.55);
+z-index: 300;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 20px;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.2s;
+}
+.confirm-overlay.open { opacity: 1; pointer-events: all; }
+
+.confirm-modal {
+background: var(–surface);
+border-radius: 16px;
+padding: 24px 20px 20px;
+width: 100%;
+max-width: 300px;
+border-top: 3px solid var(–red);
+transform: scale(0.95);
+transition: transform 0.2s;
+text-align: center;
+}
+.confirm-overlay.open .confirm-modal { transform: scale(1); }
+
+.confirm-icon { font-size: 32px; margin-bottom: 10px; }
+.confirm-title {
+font-size: 16px;
+font-weight: 700;
+color: var(–dark);
+margin-bottom: 6px;
+}
+.confirm-sub {
+font-size: 13px;
+color: var(–mid);
+margin-bottom: 20px;
+line-height: 1.5;
+}
+.confirm-btns { display: flex; gap: 8px; }
+.btn-confirm-cancel {
+flex: 1;
+background: var(–surface2);
+color: var(–mid);
+border: none;
+border-radius: 8px;
+padding: 12px;
+font-size: 14px;
+font-weight: 700;
+cursor: pointer;
+font-family: ‘Noto Sans JP’, sans-serif;
+transition: background 0.15s;
+}
+.btn-confirm-cancel:hover { background: var(–line); }
+.btn-confirm-delete {
+flex: 1;
+background: var(–red);
+color: white;
+border: none;
+border-radius: 8px;
+padding: 12px;
+font-size: 14px;
+font-weight: 700;
+cursor: pointer;
+font-family: ‘Noto Sans JP’, sans-serif;
+transition: opacity 0.15s;
+}
+.btn-confirm-delete:hover { opacity: 0.85; }
+
+/* ADD PLAYER */
+.add-player-card {
+background: var(–surface);
+border-radius: 14px;
+border: 1.5px dashed var(–line);
+padding: 14px;
+display: flex;
+gap: 8px;
+}
+
+.add-player-card input {
+flex: 1;
+border: 1px solid var(–line);
+border-radius: 8px;
+padding: 10px 12px;
+font-size: 14px;
+font-family: ‘Noto Sans JP’, sans-serif;
+color: var(–dark);
+outline: none;
+transition: border-color 0.2s;
+background: var(–bg);
+}
+.add-player-card input:focus { border-color: var(–orange); }
+
+.add-player-card input.num-input {
+flex: 0 0 64px;
+text-align: center;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 20px;
+color: var(–orange);
+}
+
+.btn-add {
+background: var(–orange);
+color: white;
+border: none;
+border-radius: 8px;
+padding: 10px 16px;
+font-size: 18px;
+cursor: pointer;
+transition: opacity 0.2s;
+}
+.btn-add:hover { opacity: 0.85; }
+
+/* STATS PAGE */
+.stats-summary {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+gap: 10px;
+margin-bottom: 16px;
+}
+
+.stat-card {
+background: var(–surface);
+border-radius: 12px;
+padding: 14px 10px;
+text-align: center;
+border: 1px solid var(–line);
+}
+
+.stat-value {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 32px;
+color: var(–dark);
+line-height: 1;
+}
+.stat-value.orange { color: var(–orange); }
+.stat-value.green { color: var(–green); }
+
+.stat-label {
+font-size: 10px;
+color: var(–mid);
+margin-top: 3px;
+font-family: ‘JetBrains Mono’, monospace;
+letter-spacing: 0.5px;
+}
+
+/* RANKING */
+.ranking-list {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.rank-item {
+background: var(–surface);
+border-radius: 12px;
+padding: 12px 14px;
+display: flex;
+align-items: center;
+gap: 12px;
+border: 1px solid var(–line);
+}
+
+.rank-num {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 20px;
+color: var(–mid);
+min-width: 24px;
+text-align: center;
+}
+.rank-num.gold { color: #D4A017; }
+.rank-num.silver { color: #999; }
+.rank-num.bronze { color: #C47A45; }
+
+.rank-name { flex: 1; font-size: 14px; font-weight: 700; }
+
+.rank-bar-wrap {
+width: 80px;
+height: 6px;
+background: var(–surface2);
+border-radius: 3px;
+overflow: hidden;
+}
+.rank-bar {
+height: 100%;
+border-radius: 3px;
+background: var(–orange);
+transition: width 0.6s ease;
+}
+
+.rank-rate {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 18px;
+min-width: 44px;
+text-align: right;
+}
+
+/* SECTION TITLE */
+.section-title {
+font-size: 11px;
+font-family: ‘JetBrains Mono’, monospace;
+color: var(–mid);
+letter-spacing: 2px;
+text-transform: uppercase;
+margin-bottom: 10px;
+margin-top: 4px;
+}
+
+/* HISTORY PAGE */
+.history-session {
+background: var(–surface);
+border-radius: 12px;
+border: 1px solid var(–line);
+margin-bottom: 12px;
+overflow: hidden;
+}
+
+.history-session-header {
+padding: 12px 14px;
+background: var(–dark);
+color: white;
+font-size: 13px;
+font-weight: 700;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.history-session-header span {
+font-family: ‘JetBrains Mono’, monospace;
+font-size: 11px;
+color: #888;
+}
+
+.history-row {
+display: flex;
+align-items: center;
+padding: 10px 14px;
+border-top: 1px solid var(–line);
+gap: 10px;
+}
+
+.history-player { flex: 1; font-size: 13px; font-weight: 700; }
+.history-made { font-family: ‘JetBrains Mono’, monospace; font-size: 12px; color: var(–green); }
+.history-slash { color: var(–line); margin: 0 2px; }
+.history-total { font-family: ‘JetBrains Mono’, monospace; font-size: 12px; color: var(–mid); }
+
+.empty-state {
+text-align: center;
+padding: 48px 20px;
+color: var(–mid);
+font-size: 14px;
+}
+.empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+/* FAB */
+.fab {
+position: fixed;
+bottom: 24px;
+right: 20px;
+background: var(–orange);
+color: white;
+border: none;
+border-radius: 16px;
+padding: 14px 20px;
+font-size: 14px;
+font-weight: 700;
+font-family: ‘Noto Sans JP’, sans-serif;
+cursor: pointer;
+box-shadow: 0 4px 20px rgba(232,66,10,0.4);
+transition: transform 0.2s, box-shadow 0.2s;
+z-index: 30;
+display: none;
+}
+.fab:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232,66,10,0.5); }
+.fab.visible { display: flex; align-items: center; gap: 8px; }
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="logo">FT TRACKER <sub>上智バスケ部 / マネージャー</sub></div>
+  <div class="date-badge" id="dateBadge"></div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('record')">📋 記録</div>
+  <div class="tab" onclick="switchTab('stats')">📊 統計</div>
+  <div class="tab" onclick="switchTab('history')">📁 履歴</div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-modal">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title" id="confirmTitle">本当に削除しますか？</div>
+    <div class="confirm-sub" id="confirmSub">この操作は元に戻せません</div>
+    <div class="confirm-btns">
+      <button class="btn-confirm-cancel" onclick="closeConfirm()">キャンセル</button>
+      <button class="btn-confirm-delete" onclick="confirmDelete()">削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+
+<div class="edit-overlay" id="editOverlay">
+  <div class="edit-modal">
+    <h3>選手を編集</h3>
+    <label>背番号</label>
+    <input type="number" id="editNumber" placeholder="#" min="0" max="99">
+    <label>名前</label>
+    <input type="text" id="editName" placeholder="名前" maxlength="10">
+    <div class="edit-modal-btns">
+      <button class="btn-cancel" onclick="closeEditModal()">キャンセル</button>
+      <button class="btn-save" onclick="saveEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECORD PAGE -->
+
+<div class="page active" id="page-record">
+
+  <div class="session-bar">
+    <div class="session-label">練習日</div>
+    <input type="text" id="sessionName" placeholder="例: 5/5 通常練習">
+  </div>
+
+  <div class="section-title">選手一覧</div>
+  <div class="player-grid" id="playerGrid"></div>
+
+  <div style="margin-top:12px;">
+    <div class="add-player-card">
+      <input type="number" class="num-input" id="newNumber" placeholder="#" min="0" max="99">
+      <input type="text" id="newName" placeholder="選手名を追加..." maxlength="10">
+      <button class="btn-add" onclick="addPlayer()">＋</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- STATS PAGE -->
+
+<div class="page" id="page-stats">
+  <div class="stats-summary" id="statsSummary"></div>
+  <div class="section-title">成功率ランキング（今日）</div>
+  <div class="ranking-list" id="rankingList"></div>
+</div>
+
+<!-- HISTORY PAGE -->
+
+<div class="page" id="page-history">
+  <div id="historyContent"></div>
+</div>
+
+<!-- FAB: save session -->
+
+<button class="fab" id="saveFab" onclick="saveSession()">💾 この練習を保存</button>
+
+<script>
+// ---- STATE ----
+let players = [
+  { id: 1, number: 4, name: '田中', shots: [] },
+  { id: 2, number: 7, name: '山本', shots: [] },
+  { id: 3, number: 11, name: '佐藤', shots: [] },
+  { id: 4, number: 15, name: '鈴木', shots: [] },
+  { id: 5, number: 23, name: '高橋', shots: [] },
+];
+let openPlayerId = null;
+let sessions = JSON.parse(localStorage.getItem('ft_sessions') || '[]');
+let nextId = 100;
+
+// ---- DATE ----
+const now = new Date();
+document.getElementById('dateBadge').textContent =
+  `${now.getMonth()+1}/${now.getDate()} ${['日','月','火','水','木','金','土'][now.getDay()]}`;
+document.getElementById('sessionName').value =
+  `${now.getMonth()+1}/${now.getDate()} 練習`;
+
+// ---- TABS ----
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['record','stats','history'][i] === tab);
+  });
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  if (tab === 'stats') renderStats();
+  if (tab === 'history') renderHistory();
+
+  // FAB visible only on record tab
+  const anyShots = players.some(p => p.shots.length > 0);
+  document.getElementById('saveFab').classList.toggle('visible', tab === 'record' && anyShots);
+}
+
+// ---- RENDER PLAYERS ----
+function renderPlayers() {
+  const grid = document.getElementById('playerGrid');
+  grid.innerHTML = '';
+
+  players.forEach(player => {
+    const made = player.shots.filter(s => s).length;
+    const total = player.shots.length;
+    const rate = total > 0 ? Math.round(made / total * 100) : null;
+
+    let rateClass = 'rate-none';
+    let rateText = '—';
+    if (rate !== null) {
+      rateText = rate + '%';
+      if (rate >= 70) rateClass = 'rate-high';
+      else if (rate >= 50) rateClass = 'rate-mid';
+      else rateClass = 'rate-low';
+    }
+
+    const isOpen = openPlayerId === player.id;
+
+    const card = document.createElement('div');
+    card.className = `player-card${isOpen ? ' recording' : ''}`;
+    card.dataset.id = player.id;
+
+    // Shot history dots
+    const dotsHtml = player.shots.map((s, i) =>
+      `<div class="shot-dot ${s ? 'in' : 'out'}" onclick="undoShot(${player.id},${i})" title="タップで取り消し">${s ? '○' : '×'}</div>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="player-card-header" onclick="togglePlayer(${player.id})">
+        <div class="player-number">${player.number}</div>
+        <div class="player-info">
+          <div class="player-name">${player.name}</div>
+          <div class="player-stats-inline">${made}/${total}本 ${total > 0 ? '' : '未記録'}</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-edit" onclick="event.stopPropagation(); openEditModal(${player.id})">✏️</button>
+          <button class="btn-delete" onclick="event.stopPropagation(); deletePlayer(${player.id})">🗑</button>
+          <div class="rate-pill ${rateClass}">${rateText}</div>
+        </div>
+      </div>
+      <div class="recording-panel${isOpen ? ' open' : ''}">
+        <div class="round-header">
+          <div class="round-label">フリースロー記録</div>
+          ${total > 0 ? `<button class="undo-btn" onclick="undoLastShot(${player.id})">↩ 最後を取消</button>` : ''}
+        </div>
+        <div class="shot-buttons">
+          <button class="btn-shot btn-in" onclick="recordShot(${player.id}, true)">
+            ○<span>入った！</span>
+          </button>
+          <button class="btn-shot btn-out" onclick="recordShot(${player.id}, false)">
+            ×<span>外れ</span>
+          </button>
+        </div>
+        <div class="shot-history">${dotsHtml || '<span style="font-size:11px;color:#bbb">まだ記録なし</span>'}</div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  // FAB
+  const anyShots = players.some(p => p.shots.length > 0);
+  const currentTab = document.querySelector('.tab.active');
+  const isRecord = currentTab && currentTab.textContent.includes('記録');
+  document.getElementById('saveFab').classList.toggle('visible', isRecord && anyShots);
+}
+
+function togglePlayer(id) {
+  openPlayerId = openPlayerId === id ? null : id;
+  renderPlayers();
+}
+
+function recordShot(playerId, made) {
+  const p = players.find(p => p.id === playerId);
+  if (!p) return;
+  p.shots.push(made);
+  renderPlayers();
+
+  // Haptic-like feedback via brief button highlight
+}
+
+function undoLastShot(playerId) {
+  const p = players.find(p => p.id === playerId);
+  if (p && p.shots.length > 0) {
+    p.shots.pop();
+    renderPlayers();
+  }
+}
+
+function undoShot(playerId, index) {
+  const p = players.find(p => p.id === playerId);
+  if (p) {
+    p.shots.splice(index, 1);
+    renderPlayers();
+  }
+}
+
+function addPlayer() {
+  const numInput = document.getElementById('newNumber');
+  const nameInput = document.getElementById('newName');
+  const name = nameInput.value.trim();
+  const number = numInput.value.trim() || '—';
+  if (!name) { nameInput.focus(); return; }
+  players.push({ id: nextId++, number: number, name: name, shots: [] });
+  nameInput.value = '';
+  numInput.value = '';
+  renderPlayers();
+}
+
+document.getElementById('newName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addPlayer();
+});
+
+// ---- EDIT / DELETE ----
+let editingId = null;
+
+function openEditModal(id) {
+  const p = players.find(p => p.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('editNumber').value = p.number === '—' ? '' : p.number;
+  document.getElementById('editName').value = p.name;
+  document.getElementById('editOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('editName').focus(), 100);
+}
+
+function closeEditModal() {
+  document.getElementById('editOverlay').classList.remove('open');
+  editingId = null;
+}
+
+function saveEdit() {
+  const p = players.find(p => p.id === editingId);
+  if (!p) return;
+  const name = document.getElementById('editName').value.trim();
+  const number = document.getElementById('editNumber').value.trim() || '—';
+  if (!name) { document.getElementById('editName').focus(); return; }
+  p.name = name;
+  p.number = number;
+  closeEditModal();
+  renderPlayers();
+}
+
+let deletingId = null;
+
+function deletePlayer(id) {
+  const p = players.find(p => p.id === id);
+  if (!p) return;
+  deletingId = id;
+  document.getElementById('confirmTitle').textContent = `「${p.name}」を削除しますか？`;
+  document.getElementById('confirmSub').textContent = '記録データも消えます。この操作は元に戻せません。';
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  deletingId = null;
+}
+
+function confirmDelete() {
+  if (!deletingId) return;
+  players = players.filter(p => p.id !== deletingId);
+  if (openPlayerId === deletingId) openPlayerId = null;
+  closeConfirm();
+  renderPlayers();
+}
+
+document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeConfirm();
+});
+
+document.getElementById('editOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
+document.getElementById('editName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveEdit();
+});
+
+// ---- STATS ----
+function renderStats() {
+  const summary = document.getElementById('statsSummary');
+  const ranking = document.getElementById('rankingList');
+
+  const allShots = players.flatMap(p => p.shots);
+  const totalShots = allShots.length;
+  const totalMade = allShots.filter(s => s).length;
+  const teamRate = totalShots > 0 ? Math.round(totalMade / totalShots * 100) : 0;
+
+  summary.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value orange">${totalShots}</div>
+      <div class="stat-label">TOTAL SHOTS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value green">${totalMade}</div>
+      <div class="stat-label">MADE</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${teamRate}%</div>
+      <div class="stat-label">TEAM RATE</div>
+    </div>
+  `;
+
+  // Ranking
+  const withShots = players.filter(p => p.shots.length > 0)
+    .map(p => ({
+      ...p,
+      made: p.shots.filter(s => s).length,
+      total: p.shots.length,
+      rate: Math.round(p.shots.filter(s => s).length / p.shots.length * 100)
+    }))
+    .sort((a, b) => b.rate - a.rate);
+
+  if (withShots.length === 0) {
+    ranking.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>まだ記録がありません</div>';
+    return;
+  }
+
+  const maxRate = withShots[0].rate;
+  ranking.innerHTML = withShots.map((p, i) => {
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    const rankSymbol = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1;
+    const rateColor = p.rate >= 70 ? 'var(--green)' : p.rate >= 50 ? '#B8860B' : 'var(--red)';
+    return `
+      <div class="rank-item">
+        <div class="rank-num ${rankClass}">${rankSymbol}</div>
+        <div>
+          <div class="rank-name">#${p.number} ${p.name}</div>
+          <div style="font-size:11px;color:var(--mid);font-family:'JetBrains Mono',monospace">${p.made}/${p.total}本</div>
+        </div>
+        <div class="rank-bar-wrap">
+          <div class="rank-bar" style="width:${p.rate}%;background:${rateColor}"></div>
+        </div>
+        <div class="rank-rate" style="color:${rateColor}">${p.rate}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ---- SAVE SESSION ----
+function saveSession() {
+  const sessionName = document.getElementById('sessionName').value.trim() || '練習';
+  const data = {
+    id: Date.now(),
+    name: sessionName,
+    date: new Date().toLocaleDateString('ja-JP'),
+    players: players
+      .filter(p => p.shots.length > 0)
+      .map(p => ({
+        number: p.number,
+        name: p.name,
+        made: p.shots.filter(s => s).length,
+        total: p.shots.length
+      }))
+  };
+
+  if (data.players.length === 0) return;
+
+  sessions.unshift(data);
+  localStorage.setItem('ft_sessions', JSON.stringify(sessions));
+
+  // Reset shots
+  players.forEach(p => p.shots = []);
+  openPlayerId = null;
+  renderPlayers();
+
+  document.getElementById('saveFab').classList.remove('visible');
+
+  // Show feedback
+  const fab = document.getElementById('saveFab');
+  fab.textContent = '✓ 保存しました！';
+  setTimeout(() => {
+    fab.innerHTML = '💾 この練習を保存';
+  }, 1500);
+}
+
+// ---- HISTORY ----
+function renderHistory() {
+  const container = document.getElementById('historyContent');
+  if (sessions.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📁</div>まだ履歴がありません<br><small style="font-size:12px;margin-top:6px;display:block">記録後「この練習を保存」で蓄積されます</small></div>';
+    return;
+  }
+
+  container.innerHTML = sessions.map(session => {
+    const totalMade = session.players.reduce((s, p) => s + p.made, 0);
+    const totalShots = session.players.reduce((s, p) => s + p.total, 0);
+    const teamRate = totalShots > 0 ? Math.round(totalMade / totalShots * 100) : 0;
+
+    const rows = session.players.map(p => {
+      const rate = Math.round(p.made / p.total * 100);
+      const rateColor = rate >= 70 ? 'var(--green)' : rate >= 50 ? '#B8860B' : 'var(--red)';
+      return `
+        <div class="history-row">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--orange);min-width:28px">${p.number}</div>
+          <div class="history-player">${p.name}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px">
+            <span style="color:var(--green)">${p.made}</span>
+            <span style="color:var(--line)"> / </span>
+            <span style="color:var(--mid)">${p.total}</span>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:17px;min-width:40px;text-align:right;color:${rateColor}">${rate}%</div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="history-session">
+        <div class="history-session-header">
+          ${session.name}
+          <span>チーム ${teamRate}% (${totalMade}/${totalShots})</span>
+        </div>
+        ${rows}
+      </div>
+    `;
+  }).join('');
+}
+
+// ---- INIT ----
+renderPlayers();
+</script>
+
+</body>
+</html>
